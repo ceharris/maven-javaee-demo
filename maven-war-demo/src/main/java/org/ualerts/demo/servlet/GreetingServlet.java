@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import demo.GreetingService;
 
-@WebServlet("/hello")
+@WebServlet("/")
 public class GreetingServlet extends HttpServlet {
 
   private static final long serialVersionUID = -2700408606239725576L;

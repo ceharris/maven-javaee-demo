@@ -8,20 +8,6 @@
   <artifactId>maven-war-demo</artifactId>
   <packaging>war</packaging>
   <name>WAR Demo</name>
-  <build>
-    <plugins>
-      <plugin>
-        <artifactId>maven-war-plugin</artifactId>
-        <configuration>
-	        <archive>
-	          <manifest>
-	            <addClasspath>true</addClasspath>
-	          </manifest>
-	        </archive>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
   <dependencies>
   	<dependency>
   		<groupId>org.ualerts.demo</groupId>
