@@ -34,5 +34,6 @@
 		<module>maven-ejb-demo</module>
 		<module>maven-ear-demo</module>
 		<module>maven-war-demo</module>
+		<module>maven-rar-demo</module>
 	</modules>
 </project>
