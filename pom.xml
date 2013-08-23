@@ -20,6 +20,14 @@
 					<generateClient>true</generateClient>
 				</configuration>
 			</plugin>
+      <plugin>
+        <artifactId>maven-ear-plugin</artifactId>
+        <configuration>
+          <version>6</version>
+          <defaultJavaBundleDir>lib/</defaultJavaBundleDir>
+          <skinnyWars>true</skinnyWars>
+        </configuration>
+      </plugin>
 		</plugins>
     <pluginManagement>
       <plugins>
@@ -36,4 +44,7 @@
 		<module>maven-war-demo</module>
 		<module>maven-rar-demo</module>
 	</modules>
+	<properties>
+	  <springframework.version>3.2.4.RELEASE</springframework.version>
+	</properties>
 </project>

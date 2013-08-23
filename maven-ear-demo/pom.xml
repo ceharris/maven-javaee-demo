@@ -14,11 +14,8 @@
       <plugin>
         <artifactId>maven-ear-plugin</artifactId>
         <configuration>
-          <version>6</version>
           <displayName>EAR Demo</displayName>
           <description>A demonstration of EAR assembly using Maven.</description>
-          <defaultJavaBundleDir>lib/</defaultJavaBundleDir>
-          <skinnyWars>true</skinnyWars>
           <modules>
             <ejbModule>
               <groupId>${project.groupId}</groupId>
