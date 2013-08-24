@@ -21,6 +21,10 @@
               <groupId>${project.groupId}</groupId>
               <artifactId>maven-ejb-demo</artifactId>
             </ejbModule>
+            <rarModule>
+              <groupId>${project.groupId}</groupId>
+              <artifactId>maven-rar-demo</artifactId>
+            </rarModule>
             <webModule>
               <groupId>${project.groupId}</groupId>
               <artifactId>maven-war-demo</artifactId>
@@ -37,6 +41,12 @@
       <artifactId>maven-ejb-demo</artifactId>
       <version>${project.version}</version>
       <type>ejb</type>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>maven-rar-demo</artifactId>
+      <version>${project.version}</version>
+      <type>rar</type>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
