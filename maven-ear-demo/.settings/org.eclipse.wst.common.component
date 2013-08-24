@@ -5,6 +5,9 @@
         <dependent-module archiveName="maven-ejb-demo-1.0.0-SNAPSHOT.jar" deploy-path="/" handle="module:/resource/maven-ejb-demo/maven-ejb-demo">
             <dependency-type>uses</dependency-type>
         </dependent-module>
+        <dependent-module archiveName="maven-rar-demo-1.0.0-SNAPSHOT.rar" deploy-path="/" handle="module:/resource/maven-rar-demo/maven-rar-demo">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
         <dependent-module archiveName="maven-war-demo-1.0.0-SNAPSHOT.war" deploy-path="/" handle="module:/resource/maven-war-demo/maven-war-demo">
             <dependency-type>uses</dependency-type>
         </dependent-module>
@@ -14,5 +17,6 @@
         <dependent-module archiveName="commons-io-2.4.jar" deploy-path="/" handle="module:/classpath/var/M2_REPO/commons-io/commons-io/2.4/commons-io-2.4.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
+        <property name="component.exclusion.patterns" value="**/.gitignore"/>
     </wb-module>
 </project-modules>
