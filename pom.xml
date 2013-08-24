@@ -28,6 +28,17 @@
           <skinnyWars>true</skinnyWars>
         </configuration>
       </plugin>
+      <plugin>
+        <artifactId>maven-rar-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>rar</id>
+            <goals>
+              <goal>rar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
 		</plugins>
     <pluginManagement>
       <plugins>
