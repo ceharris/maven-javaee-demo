@@ -9,5 +9,7 @@
     
   <context:annotation-config/>
   <context:component-scan base-package="demo.internal"/>
-    
+  
+  <bean class="org.ualerts.jca.executor.WorkManagerExecutorService"/>
+  
 </beans>
