@@ -1,55 +1,137 @@
 package demo.internal;
 
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
+import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.TimeUnit;
+
 import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
+import javax.resource.spi.BootstrapContext;
+import javax.resource.spi.UnavailableException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.DisposableBean;
-import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 @Component
 @Lazy(false)
-public class PeriodicLoggingBean implements InitializingBean, DisposableBean {
+public class PeriodicLoggingBean {
 
   private static final Logger logger = 
       LoggerFactory.getLogger(PeriodicLoggingBean.class);
+  
+  private final Runnable task = new LoggingTask();
+  private final TimerTask scheduleWork = new ScheduleWorkTask();
+  
+  @Autowired
+  private BootstrapContext bootstrapContext;
 
-  private final Task task = new Task();
-  private final Thread thread = new Thread(task, "Periodic Task");
+  @Autowired
+  private ExecutorService executorService;
+  
+  private Timer timer;
+  private boolean busy;
+  
   
   @PostConstruct
-  public void afterPropertiesSet() {
-    logger.info("started");
-    thread.start();
-  }
-  
-  @PreDestroy
-  public void destroy() {
-    logger.info("stopping");
-    thread.interrupt();
+  public void init() {
     try {
-      thread.join();
-      logger.info("stopped");
+      timer = bootstrapContext.createTimer();
+      timer.schedule(scheduleWork, 100, 100);
+      logger.info("started");
     }
-    catch (InterruptedException ex) {
-      Thread.currentThread().interrupt();
-      logger.warn("interrupted while waiting for service thread to exit");
+    catch (UnavailableException ex) {
+      throw new IllegalStateException("cannot obtain timer");
     }
   }
+
+  private synchronized boolean wasBusy() {
+    if (busy) return true;
+    busy = true;
+    return false;
+  }
   
-  private class Task implements Runnable {
+  private synchronized void clearBusy() {
+    busy = false;
+  }
+  
+  private class ScheduleWorkTask extends TimerTask {
+
+    private int count = 50;
+    
+    @Override
+    public void run() {
+      while (count > 0) {
+        try {
+          if (!wasBusy()) {
+            executorService.submit(task);
+            count--;
+            logger.info("work scheduled");
+          }
+        }
+        catch (RejectedExecutionException ex) {
+          logger.error("can't schedule work: " + ex);
+        }
+      }
+      
+      executorService.shutdown();
+      try {
+        boolean terminated = executorService.awaitTermination(
+            6000, TimeUnit.MILLISECONDS);
+        if (terminated) {
+          logger.info("executor shut down");
+        }
+        else {
+          logger.warn("executor did not shut down");
+        }
+      }
+      catch (InterruptedException ex) {
+        logger.warn("interrupted while awaiting shutdown");
+        Thread.currentThread().interrupt();
+      }
+      logger.info("done");
+      timer.cancel();
+    }
+    
+  }
+  
+  private class LoggingTask implements Runnable {
 
     @Override
     public void run() {
-      while (!Thread.currentThread().isInterrupted()) {
-        logger.info("task invoked");
-        sleep(5000);
+      Future<Integer> f = executorService.submit(new Callable<Integer>() {
+        @Override
+        public Integer call() throws Exception {
+          int delay = (int) (Math.random()*2000 + 1000);
+          if (delay < 1500) {
+            throw new UnsupportedOperationException("delay too small");
+          }
+          sleep(delay);
+          return delay;
+        } 
+      });
+      try {
+        logger.info("work completed in {} milliseconds", f.get());
       }
+      catch (CancellationException ex) {
+        logger.warn("work cancelled");
+      }
+      catch (ExecutionException ex) {
+        logger.warn("work failed: " + ex.getCause());
+      }
+      catch (InterruptedException ex) {
+        logger.warn("work interrupted");
+      }
+      clearBusy();
     }
-    
+
     private void sleep(long duration) {
       try {
         Thread.sleep(duration);
@@ -58,6 +140,7 @@ public class PeriodicLoggingBean implements InitializingBean, DisposableBean {
         Thread.currentThread().interrupt();
       }
     }
+
   }
   
 }
